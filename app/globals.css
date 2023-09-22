@@ -14,5 +14,15 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  padding: 1rem;
 }
+
+/* note: by default when we use tailwindcss all html elements are unstyled */
+
+/* with this approach we can provide default styles to some html elements */
+@layer base {
+  h1 {
+    @apply font-extrabold text-6xl;
+  }
+}
+
+/* *439# */

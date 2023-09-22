@@ -1,7 +1,23 @@
-import React from 'react';
+'use client';
 
-const NewPage = () => {
-  return <h1 className='text-3xl p-1'>This is the new users page</h1>;
+import React from 'react';
+import { useRouter } from 'next/navigation';
+
+const NewUser = () => {
+  const router = useRouter();
+  const handleNewUser = () => {
+    console.log('User created successfully...');
+    router.push('/users');
+  };
+  return (
+    <button
+      className='btn btn-primary text-white'
+      type='button'
+      onClick={handleNewUser}
+    >
+      Create Now
+    </button>
+  );
 };
 
-export default NewPage;
+export default NewUser;

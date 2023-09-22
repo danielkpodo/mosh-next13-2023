@@ -247,3 +247,124 @@ Nextjs comes with special files
 - This is how you do it you create folder named users and add the root file page.tsx. Next you create folder with name [id] and inside of it you create the file page.tsx
 - To access the id value from the route we pass in props into the function and extract the param property
 - The params way of accessing props can only be accessed on pages not on components
+
+### Catch all segments
+
+- Sometimes we need varied number of parameters in a route
+
+- lets say we want to implement a route like `products/groceries/dairy/milk/nunu`
+- Using the patterin in `/users/2/photos/2` will lead us to creating overly nested files and folders.
+- To avoid this we use the catch all segments
+- To make our url accept varied number of parameters we prefix it with the rest operator `[...slug]`
+- The `slug` in the url parameter is an array of strings
+- With this implementation `/products/groceries/milk` , if you remove atleast all the 2 parameters `/groceries/milk` you will get a 404 error
+- To make the slug parameter optional we have to wrap it in double brackets like so `[[...slug]]`
+
+### Accessing Query String Parameters
+
+```ts
+interface Props {
+  params: { id: number };
+  searchParams: { sortBy: number; age: number };
+}
+
+const User = ({ params: { id }, searchParams: { sortBy, age } }: Props) => {};
+```
+
+- To access query string parameters we use a differenct property called `searchParams`
+
+```tsx
+interface Props {
+  searchParams: {
+    sortOrder: string;
+  };
+}
+```
+
+### Checkout this npm library for data sorting
+
+- fast sort
+- fast-sort is useful in sorting data in asc or desc order
+- with using next.js sorting is done on the server
+
+## Using Layouts (`Layouts.tsx`)
+
+- We use `layouts` to create ui that is shared b/n multiple pages
+- We can also create custom layouts for our admin pages
+- A layout should have children of type react node
+
+//NOTE: the root layout that will have in the root directory defines the common ui layout for all our public pages
+// whereas the root layout we have in the admin layout defines all our common ui layout for all the admin pages
+// By default when we use tailwind our elements are unstyled
+
+### Navigation
+
+- We have learnt about the Link component in Next.js
+- There are 3 things we need to know about the link component
+
+1. Only downloads the content of the target page
+2. It prefers links that are in the viewport -> this is to improve performance
+3. As we navigate our pages, nextjs caches the request on the client: The client cache is cleared when we do a full reload
+
+### Programmatic Navigation
+
+- Sometimes we need to take the user to a certain page as a result of clicking a button or submitting a form this is called programmatic navigation
+- The `useRouter ` import should come from `next/navigation` else this will throw an error
+- `router.push("/users")`
+
+```tsx
+import { useRouter } from 'next/navigation';
+
+//  before
+const router = useRouter();
+const handleNewUser = () => {
+  router.push('/users');
+};
+```
+
+### Showing Loading UI's
+
+- In react 18 we have a new feature called `Suspense` that we can use to show a fallback ui while a component is being rendered
+- We wrap a component inside a Suspense component and then show a fallback ui while the component is been rendered
+
+```tsx
+  import {Suspense} from 'react'
+// the fallback prop is what we display whilst waiting for the page to render
+  return (
+    <Suspense fallback={<LoadingComponent>}>
+      <Users>
+    </Suspense>
+  )
+```
+
+- Seeing loading in the network tab does not impact the SEO
+- This is what the client will initially see, the server generates the page and sends it to the client, so it does not terminate the response request cycle, it will wait for the user table to render and then it will send additional data back to the client. This is called straming
+- Note on a given page we can have multiple suspense on a page
+
+NOTE: Now if we want to show a fallback of loading on every page there are two ways to do this
+
+1. Wrap Suspense around our root layout component like so
+
+```tsx
+    // inside layout.tsx
+    // with this approach as we navigate our pages we see the loading message
+  ...
+    <Suspense fallback={<p>Loading...</p>}>
+      {children}
+    </Suspense>
+
+```
+
+Another way to do this 2. We create `loading.tsx ` file in the root of our app
+
+- In this component we create and export a react component that we export to be rendered when a page is being rendered
+
+```tsx
+const Loading = () => {
+  return <p> Loading... </p>;
+};
+
+export default Loading;
+```
+
+### Handling Errors
