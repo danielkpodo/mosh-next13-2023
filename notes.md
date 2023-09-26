@@ -367,4 +367,135 @@ const Loading = () => {
 export default Loading;
 ```
 
-### Handling Errors
+```ts You can use
+//  for displaying top loading nprogress
+npm i nextjs-toploader
+```
+
+## Handling Errors
+
+### Handling Not Found Errors in Next.js 13
+
+- Next.js uses a special file in the root of the app directory called `not-found.tsx`
+- We can also have separate 404 for different parts of our page.
+- For example for route `/users/:id` we create the `not-found.tsx` file in the folder `[id].tsx`
+- Then in our UserDetail page we check a condition for the id then we call the `notfound from next/navigation`
+
+```tsx
+import { notFound } from 'next/navigation';
+if (id > 10) notFound();
+```
+
+### Handling Unexpected Errors
+
+- The detail of the unexpected error is shown on our page when an unexpected error happens. This page only shows in development. but when we build our app for production a generic error page is shown (The error says a server-side exception has occurred)
+- To whip up a custom error if any of our pages encountered an unexpected error we create a special file in the root of our `/app` named `error.tsx`
+- This error file has to be a client component. The error file in our app folder can catch any error in any page in our application
+- But we can also create custom errror in any page of our application. If we put an `error.tsx` file into the `users folder` it will capture any error under that route
+- Our error file cannot capture errors that happen in our applicaton `layouts.tsx` in any case we have some logic in the layouts file we need to create a separate error file to capture error in that file. That error file is called `global-error.tsx`. This file must be a client component
+- In the error.tsx file we should be able to access the error that has occurred
+
+```tsx
+interface Props {
+  error: Error;
+}
+
+const ErrorPage = ({ error }: Props) => {
+  console.log(error);
+
+  return <div> An unexpected error occurred!! </div>;
+};
+```
+
+- Sometimes our errors are temporary so we may want to give the user the chance to retry.
+- Next.js gives us a reset function that we can use to retry. We handle the retry with a button that is the reason why we make the error file a client component
+- Use the retry method only in certain parts of your application. Otherwise you might end up with numerous repetitive errors in your error log
+
+```tsx
+interface Props {
+  error: Error;
+  reset: () => void;
+}
+
+const ErrorPage = ({ error, reset }: Props) => {
+  console.log(error);
+
+  return (
+    <div>
+      An unexpected error occurred!!
+      <button onClick={() => reset()}> Retry </button>
+    </div>
+  );
+};
+```
+
+## Building APIS
+
+- Create a folder named `/api` in the app folder
+- This is not required but it is a common convention to follow
+- We createa a folder named users inside the api folder. and inside it we create a file named `route.tsx`
+- In a a given folder or url segment we can either have a route file or a page file but not both
+- If we want to handle http request we should use a route file
+
+### GETTING DATA
+
+- We export a GET function from the route.tsx file and pass the argument (request: NextRequest) when the `request:NextRequest` argument is removed our api endpoint will be cached
+
+```ts
+import { NextRequest, NextResponse } from 'next/server';
+export function GET(request: NextRequest) {
+  return NextResponse.json('Hello World');
+}
+```
+
+- To get a single user object we create a folder named `[id]` inside the users folder and inside it we add the `route.tsx` inside of it
+
+### GETTING SINGLE DATA
+
+```tsx
+import { NextRequest, NextResponse } from 'next/server';
+
+interface Props {
+  params: { id: number };
+}
+export function GET(request: NextRequest, { params: { id } }: Props) {
+  // In a real world application we will be fetching the data from a real world database
+  // step 1. fetch data from a db
+  // step 2: If not found, rerutn 404 error
+  // step 3: else return the actual data
+
+  /**
+   * using a fake example when id > 10
+   */
+
+  if (id > 10) {
+    return NextResponse.json(
+      {
+        error: 'User not found',
+      },
+      { status: 404, statusText: 'Not Found Buddy' }
+    );
+  }
+
+  return NextResponse.json({ id, name: 'mosh' });
+}
+```
+
+### CREATING DATA
+
+- To create a user we use the /users endpoint but then we include the req in the body of the request
+
+### Validating Data with Zod
+
+```bash
+ npm i zod
+
+# https://dev.to/benoitpetit/easily-validate-your-nodejs-inputs-with-zod-an-introduction-to-typescript-first-schema-validation-236p
+```
+
+## Integrating with Prisma Database
+
+```bash
+  # to access psql command in terminal
+  psql -U postgres
+```

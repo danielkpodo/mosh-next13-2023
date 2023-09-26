@@ -3,6 +3,7 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
 import Navbar from './components/Navbar';
+import NextTopLoader from 'nextjs-toploader';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,6 +20,7 @@ export default function RootLayout({
   return (
     <html lang='en' data-theme='winter'>
       <body className={inter.className}>
+        <NextTopLoader />
         <Navbar />
         <main className='p-5'>{children}</main>
       </body>
