@@ -499,3 +499,12 @@ export function GET(request: NextRequest, { params: { id } }: Props) {
   # to access psql command in terminal
   psql -U postgres
 ```
+
+## Migrating Prisma file
+
+```bash
+npx prisma migrate dev --name init
+
+# after adding a new column
+npx prisma migrate dev --name add_registered_at
+```
