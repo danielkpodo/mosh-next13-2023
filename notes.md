@@ -508,3 +508,72 @@ npx prisma migrate dev --name init
 # after adding a new column
 npx prisma migrate dev --name add_registered_at
 ```
+
+## Uploading Files
+
+- To store user files there are a number of cloud platforms you can use
+
+1. Amazon s3
+2. Google Cloud Platform
+3. Microsoft Azure
+4. Cloudinary - cloudinary comes with some react components we can easily drop in and use
+5. Digital Ocean
+
+```tsx
+npm i next-cloudinary
+
+```
+
+- Visit `next cloudinary documentation` -> `https://next.cloudinary.dev/installation` to see docs on how to integrate cloudinary with next.js
+- The cloudinary widget (`CldUploadWidget`) does not have a user interface it renders anything that we pass as a child
+- The children expects a function that returns a button
+- Head over to `https://demo.cloudinary.com/uw/#/` to see how you can customize the upload widget
+
+## Adding Authentication using Next auth
+
+- head over to `next-auth.js.org`
+- we create a folder called `/auth/[...nextauth]` in the app folder under the `/api folder`- because nextauth uses route handlers
+- This means any route that starts with `/auth` we will handle it inside that folder
+- We set two .env variables for next-auth
+
+```bash
+# The url of your websiste
+  NEXTAUTH_URL=http:localhost:3000
+
+  # The secret key to sign the JWT
+  # It is a long random string;
+  NEXTAUTH_SECRET=6oQEBoFbYfGhurMXxCzyYgZS+N2qq2xB95p62fupu9E=
+
+```
+
+`use this to generate a random keys`
+
+```bash
+  openssl rand -base64 32
+```
+
+### SETTING UP PROVIDERS (GOOGLE)
+
+- Generate the neccessary credentials on google cloud console
+- the url `/api/auth/signin` is part of next-auth url systems (It is exposed by next-auth)
+- As we add more providers they will be show on our page automatically
+
+<!-- write out the steps to enable google api login  on the cloud console-->
+
+## Authentication Sessions
+
+- When the user logs in next-auth creates an authentication session for that user
+- By default that session is represented as a json web token
+- Cookies are small pieces of information that are exchanged b/n the client and the server with each request. So anytime our application sends a request the cookies are sent to the server.
+- The `next-auth-session-token` is a jwt token, that is a json object. Next-auth knows how to decode this.
+
+### Accessing Sessions on the Client
+
+- To access the authentication session on the client we have to go to the root layout of our app. We wrap a session provider around our layout.
+- The session provider will give us access to the session object.
+- This session provider internally uses react context api to pass the session down our component tree
+- We cannot wrap the SessionProvider directly around our root component. We have to extract that functionaly into the folder `/auth/AuthProvider.tsx`
+
+- With this approach the current user name will flash
+
+### Assessing Sessions on the server

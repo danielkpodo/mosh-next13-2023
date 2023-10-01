@@ -1,9 +1,11 @@
 import './globals.css';
 
+import AuthProvider from './auth/AuthProvider';
 import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
 import Navbar from './components/Navbar';
 import NextTopLoader from 'nextjs-toploader';
+import { SessionProvider } from 'next-auth/react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,9 +22,11 @@ export default function RootLayout({
   return (
     <html lang='en' data-theme='winter'>
       <body className={inter.className}>
-        <NextTopLoader />
-        <Navbar />
-        <main className='p-5'>{children}</main>
+        <AuthProvider>
+          <NextTopLoader />
+          <Navbar />
+          <main className='p-5'>{children}</main>
+        </AuthProvider>
       </body>
     </html>
   );
