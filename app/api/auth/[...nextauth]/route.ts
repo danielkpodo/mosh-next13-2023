@@ -1,8 +1,44 @@
+import CrendtialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import NextAuth from 'next-auth/next';
+import { NextAuthOptions } from 'next-auth';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import bcrypt from 'bcrypt';
+import prisma from '@/prisma/client';
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   providers: [
+    CrendtialsProvider({
+      name: 'Crendtials',
+      // by default the credentials object provides an email and password input for us on the ui
+      credentials: {
+        email: { label: 'Email', type: 'email', placeholder: 'Email Address' },
+        password: {
+          label: 'Password',
+          type: 'password',
+          placeholder: 'Enter your password',
+        },
+      },
+      async authorize(credentials, req) {
+        // validate the credentials
+        if (!credentials?.email || !credentials?.password) return null;
+
+        // find the user from the database
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!user) return null;
+
+        const passwordsMatch = await bcrypt.compare(
+          credentials.password,
+          user.hashedPassword!
+        );
+
+        return passwordsMatch ? user : null;
+      },
+    }),
     // in this array we can have one or more providers
     GoogleProvider({
       // the ! @ the end of the process... is to tell typescript that we definitely have a value, thus it should not read undefined
@@ -10,7 +46,12 @@ const handler = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-});
+  session: {
+    strategy: 'jwt',
+  },
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
 

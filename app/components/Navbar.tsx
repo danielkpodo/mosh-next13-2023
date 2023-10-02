@@ -22,7 +22,14 @@ const Navbar = () => {
       <Link href='/users'>Users</Link>
       {status === 'loading' && <div>Loading...</div>}
       {/* only render the login link if the starurs is unauthenticated */}
-      {status === 'authenticated' && <div>{session.user?.name} </div>}
+      {status === 'authenticated' && (
+        <div>
+          {session.user?.name}{' '}
+          <Link href='/api/auth/signout' className='ml-5'>
+            Signout
+          </Link>
+        </div>
+      )}
       {status === 'unauthenticated' && (
         <Link href='/api/auth/signin'>Login</Link>
       )}

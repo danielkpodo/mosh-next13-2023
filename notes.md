@@ -577,3 +577,47 @@ npm i next-cloudinary
 - With this approach the current user name will flash
 
 ### Assessing Sessions on the server
+
+- In doing this we need to call the `getServerSession()` from `next-auth`
+- When calling this we need to pass our authentication options. This is the object that we used when initializing our next-auth
+- Check the usage of this feature in `the homepage => page.tsx`
+
+## Protecting Routes
+
+- To do this we will be using middlewares. this way we can run code before a request is completed
+- We create a middleware function that get created on every request, In that function we can check the user session, If a user is trying to access an authenticated page we can then redirect them to the login page.
+- In the root of our application outside the app folder we create a file named `middleware.ts`. It is a convention. We export a function called middleware.
+
+## Database Adapters
+
+- In a real application we need to store our users in a database
+- This users can have related data
+- If we use an adapter when someone logins next-auth will automatically store the data in our database
+- if we install the generic prisma adapter it will not work; lets install the nextjs own
+
+```bash
+  npm i @next-auth/prisma-adapter
+```
+
+- we add some configurations to the next auth setup
+- The next step is to add a bunch of models to our prisma schema
+- For the most part we do not have to touch the prisma table.
+
+NOTE:
+
+- `The error we get Try signing in with a different account` the type of error is callback
+- The reason this error happens is that by default the session strategy is jwt but when we use an adapter next-auth changes the strategy to `database`
+- Currently, we cannot use database strategy for social logins with oauth providers
+- We need to change the session strategy to `jwt` in the next-auth config
+
+## Configuring Credentials Provider (#64.10)
+
+- Social logins are great but what if we want to allow users to login with their passwords and email
+- we implement our own login with email and password in the next auth config using the credentials provider
+
+### REgistering Users
+
+- To allow users to register first we have to create an api endpoint, this endpoint will be called by a client component that renders a form
+- In the app folder lets add a folder called `register`
+- The higher the salt number the slower the encryption but the more secure
+- for the signup page we need to create a basic form on the client side for registering users but we use postman
