@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+
 import prisma from '@/prisma/client';
 import schema from '../schema';
 
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params: { id } }: Props) {
    * using a fake example when id > 10
    */
 
-  const user = await prisma.user.findUnique({ where: { id: parseInt(id) } });
+  const user = await prisma.user.findUnique({ where: { id } });
   if (!user)
     return NextResponse.json(
       { error: `User with id ${id} not found` },
@@ -55,7 +55,7 @@ export async function PUT(
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: params.id },
   });
 
   if (!user) {
@@ -65,19 +65,20 @@ export async function PUT(
 
   try {
     const updatedUser = await prisma.user.update({
-      where: { id: parseInt(params.id) },
+      where: { id: params.id },
       data: { name, email },
     });
 
     return NextResponse.json(updatedUser);
   } catch (error) {
-    if (error.code === 'P2002')
-      return NextResponse.json({ error: 'Email is already taken' });
+    // if (error.code === 'P2002')
+    //   return NextResponse.json({ error: 'Email is already taken' });
+    console.log(error);
   }
 }
 
 export async function DELETE(request: NextRequest, { params: { id } }: Props) {
-  const user = await prisma.user.findUnique({ where: { id: parseInt(id) } });
+  const user = await prisma.user.findUnique({ where: { id: id } });
 
   if (!user) {
     return NextResponse.json(
@@ -86,6 +87,6 @@ export async function DELETE(request: NextRequest, { params: { id } }: Props) {
     );
   }
 
-  await prisma.user.delete({ where: { id: parseInt(id) } });
+  await prisma.user.delete({ where: { id: id } });
   return NextResponse.json({ message: 'User deleted successfully' });
 }

@@ -1,3 +1,4 @@
+###
 GET http://localhost:3000/api/users
 
 
@@ -21,7 +22,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/api/users/2
+DELETE http://localhost:3000/api/users/1
 Content-Type: application/json
 
 
@@ -33,3 +34,7 @@ Content-Type: application/json
   "email": "newman@gmail.com",
   "password": "dannewman33"
 }
+
+###
+POST http://localhost:3000/api/send-email
+Content-Type: application/json

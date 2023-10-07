@@ -156,7 +156,7 @@ In summary SERVER COMPONENTS CANNOT
 - To disable caching for a data that changes frequently do this
 
 ```ts
-fetch(url, { cache: 'no-store' });
+fetch(url, { cache: "no-store" });
 ```
 
 - To keep data fresh for a certain period of time
@@ -313,12 +313,12 @@ interface Props {
 - `router.push("/users")`
 
 ```tsx
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 //  before
 const router = useRouter();
 const handleNewUser = () => {
-  router.push('/users');
+  router.push("/users");
 };
 ```
 
@@ -382,7 +382,7 @@ npm i nextjs-toploader
 - Then in our UserDetail page we check a condition for the id then we call the `notfound from next/navigation`
 
 ```tsx
-import { notFound } from 'next/navigation';
+import { notFound } from "next/navigation";
 if (id > 10) notFound();
 ```
 
@@ -442,9 +442,9 @@ const ErrorPage = ({ error, reset }: Props) => {
 - We export a GET function from the route.tsx file and pass the argument (request: NextRequest) when the `request:NextRequest` argument is removed our api endpoint will be cached
 
 ```ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 export function GET(request: NextRequest) {
-  return NextResponse.json('Hello World');
+  return NextResponse.json("Hello World");
 }
 ```
 
@@ -453,7 +453,7 @@ export function GET(request: NextRequest) {
 ### GETTING SINGLE DATA
 
 ```tsx
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 interface Props {
   params: { id: number };
@@ -471,13 +471,13 @@ export function GET(request: NextRequest, { params: { id } }: Props) {
   if (id > 10) {
     return NextResponse.json(
       {
-        error: 'User not found',
+        error: "User not found",
       },
-      { status: 404, statusText: 'Not Found Buddy' }
+      { status: 404, statusText: "Not Found Buddy" }
     );
   }
 
-  return NextResponse.json({ id, name: 'mosh' });
+  return NextResponse.json({ id, name: "mosh" });
 }
 ```
 
@@ -560,7 +560,7 @@ npm i next-cloudinary
 
 <!-- write out the steps to enable google api login  on the cloud console-->
 
-## Authentication Sessions
+### Authentication Sessions
 
 - When the user logs in next-auth creates an authentication session for that user
 - By default that session is represented as a json web token
@@ -588,7 +588,7 @@ npm i next-cloudinary
 - We create a middleware function that get created on every request, In that function we can check the user session, If a user is trying to access an authenticated page we can then redirect them to the login page.
 - In the root of our application outside the app folder we create a file named `middleware.ts`. It is a convention. We export a function called middleware.
 
-## Database Adapters
+### Database Adapters
 
 - In a real application we need to store our users in a database
 - This users can have related data
@@ -610,7 +610,7 @@ NOTE:
 - Currently, we cannot use database strategy for social logins with oauth providers
 - We need to change the session strategy to `jwt` in the next-auth config
 
-## Configuring Credentials Provider (#64.10)
+### Configuring Credentials Provider (#64.10)
 
 - Social logins are great but what if we want to allow users to login with their passwords and email
 - we implement our own login with email and password in the next auth config using the credentials provider
@@ -621,3 +621,75 @@ NOTE:
 - In the app folder lets add a folder called `register`
 - The higher the salt number the slower the encryption but the more secure
 - for the signup page we need to create a basic form on the client side for registering users but we use postman
+
+### Sending Emails with React Email
+
+- React email is used for creating beautiful emails using react and typescript
+- It gives us a bunch of components for creating html emails
+- It also gives us a tool for previewing our emails
+- And a function for sending emails
+- The easiest way is to use `npx create-email@latest` but this behaves strangely at times so we do the manual setup
+- Manual setup
+
+```bash
+  npm i react-email @react-email/components
+
+```
+
+- Create a folder called `emails in the root of the application outside the /app directory`
+- To preview the email we need to setup a script in package.json like
+
+```json
+  "preview-email": "email dev -p 3001"
+```
+
+- In the folder `emails` we add components that represent our emails
+
+### Creating an Email Template
+
+- Check `WelcomeTemplate.tsx`
+
+### Previewing Emails
+
+- To preview our email we can use `npm run preview-email`
+- Do not run this yet bkox this is going to create the application for previewing our email; and it is going to have 1000 of files
+- We do not want to track those files as part of our source code,
+- make sure to add `.react-email/` to your .gitignore
+- What is beautiful about the react email preview is that right in the interface we can send a test email. We do not need to set up anything
+
+### Styling our emails
+
+- we have two ways of styling our emails
+
+1. using css properties
+2. tailwind -> wrap the body component with <Tailwind>
+
+### Sending Emails with Resend
+
+- Go to `resend.com`
+- install resend like so
+
+```bash
+
+npm i resend@1.0.0
+
+```
+
+- We are going to create an api endpoint for sending emails
+- In a real application we really do not want to have an endpoint for sending emails
+- Instead sending emails should be part of your business operation, e.g when someone submits an order then we want to send a confirmation email
+
+## Optimization
+
+### Images
+
+- The next image component is built on top of the standard html image tag
+- Under the hood it automatically compresses and resizes our image based on the device size
+- Thus in next.js applications we should use the `Image component` as opposed to the standard html image tag
+- When we use the @ sign it means the root of our application
+- webp is a modern way of embedding images on the web which is way smaller than jpeg images
+- When we load the image on the web page and disable cache in the dev tools the original image which we set with the Image component of size 330kb is reduced to 39kb and change to webp
+- With local images next automatically detects their sizes, whereas with remote images we need to specify the sizes
+- `Also with remote images we need to update our next.config to tell next where we serving our images form`
+- To make the image responsive we need to specify the `fill prop to true`, doing this also distorts the asppect ratio of the image.
+  To fix this we set `object-fit: cover` on the image using the style attribute or tailwind

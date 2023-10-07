@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import prisma from '@/prisma/client';
 import { z } from 'zod';
 
@@ -14,6 +14,7 @@ const schema = z.object({
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const validation = schema.safeParse(body);
+  
   if (!validation.success) {
     return NextResponse.json(
       { error: validation.error.errors },

@@ -1,23 +1,23 @@
-import CrendtialsProvider from 'next-auth/providers/credentials';
-import GoogleProvider from 'next-auth/providers/google';
-import NextAuth from 'next-auth/next';
-import { NextAuthOptions } from 'next-auth';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import bcrypt from 'bcrypt';
-import prisma from '@/prisma/client';
+import CrendtialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import NextAuth from "next-auth/next";
+import { NextAuthOptions } from "next-auth";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import bcrypt from "bcryptjs";
+import prisma from "@/prisma/client";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CrendtialsProvider({
-      name: 'Crendtials',
+      name: "Crendtials",
       // by default the credentials object provides an email and password input for us on the ui
       credentials: {
-        email: { label: 'Email', type: 'email', placeholder: 'Email Address' },
+        email: { label: "Email", type: "email", placeholder: "Email Address" },
         password: {
-          label: 'Password',
-          type: 'password',
-          placeholder: 'Enter your password',
+          label: "Password",
+          type: "password",
+          placeholder: "Enter your password",
         },
       },
       async authorize(credentials, req) {
@@ -47,7 +47,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
 };
 
