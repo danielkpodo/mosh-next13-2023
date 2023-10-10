@@ -6,11 +6,11 @@
   --foreground-rgb: 0, 0, 0;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
   }
-}
+} */
 
 body {
   color: rgb(var(--foreground-rgb));
@@ -21,7 +21,7 @@ body {
 /* with this approach we can provide default styles to some html elements */
 @layer base {
   h1 {
-    @apply font-extrabold text-6xl;
+    @apply font-extrabold text-6xl font-monoLisa;
   }
 }
 

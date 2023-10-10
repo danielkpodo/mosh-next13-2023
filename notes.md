@@ -156,7 +156,7 @@ In summary SERVER COMPONENTS CANNOT
 - To disable caching for a data that changes frequently do this
 
 ```ts
-fetch(url, { cache: "no-store" });
+fetch(url, { cache: 'no-store' });
 ```
 
 - To keep data fresh for a certain period of time
@@ -313,12 +313,12 @@ interface Props {
 - `router.push("/users")`
 
 ```tsx
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 //  before
 const router = useRouter();
 const handleNewUser = () => {
-  router.push("/users");
+  router.push('/users');
 };
 ```
 
@@ -382,7 +382,7 @@ npm i nextjs-toploader
 - Then in our UserDetail page we check a condition for the id then we call the `notfound from next/navigation`
 
 ```tsx
-import { notFound } from "next/navigation";
+import { notFound } from 'next/navigation';
 if (id > 10) notFound();
 ```
 
@@ -442,9 +442,9 @@ const ErrorPage = ({ error, reset }: Props) => {
 - We export a GET function from the route.tsx file and pass the argument (request: NextRequest) when the `request:NextRequest` argument is removed our api endpoint will be cached
 
 ```ts
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 export function GET(request: NextRequest) {
-  return NextResponse.json("Hello World");
+  return NextResponse.json('Hello World');
 }
 ```
 
@@ -453,7 +453,7 @@ export function GET(request: NextRequest) {
 ### GETTING SINGLE DATA
 
 ```tsx
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
 interface Props {
   params: { id: number };
@@ -471,13 +471,13 @@ export function GET(request: NextRequest, { params: { id } }: Props) {
   if (id > 10) {
     return NextResponse.json(
       {
-        error: "User not found",
+        error: 'User not found',
       },
-      { status: 404, statusText: "Not Found Buddy" }
+      { status: 404, statusText: 'Not Found Buddy' }
     );
   }
 
-  return NextResponse.json({ id, name: "mosh" });
+  return NextResponse.json({ id, name: 'mosh' });
 }
 ```
 
@@ -693,3 +693,150 @@ npm i resend@1.0.0
 - `Also with remote images we need to update our next.config to tell next where we serving our images form`
 - To make the image responsive we need to specify the `fill prop to true`, doing this also distorts the asppect ratio of the image.
   To fix this we set `object-fit: cover` on the image using the style attribute or tailwind
+
+## Adding Third Party Scripts to NextJs
+
+- You need to decide where you need the script
+- If you need it on a single page you add it to the page, but for all pages you add it to a layout file
+- In our application we have two layout files one for the root and one for the admin. We need it in all our pages so we add it to the root layout
+- We use the script component in next.js
+- with inline scripts we wrap the child content in {``}
+- The Script component will parse it and interprete it as js code
+- The Script component has one of this values
+  - beforeInteractive - script is loaded before nextjs injects any client side code on our pages
+    - The script will load on our pages first before next.js injects any client side code
+    - We should use this strategy only for scripts that are critical and should be loaded early on. eg cookie consent managers
+  - afterinteractive - this is the default value so we do not have to set it. Our script is loaded after our page becomes interactive
+    - analytics script are good for this
+  - lazyonLoad - Our script is loaded after all the resources on the page have been fetsched
+    - this is good for background , or low priority script that do not need to be loaded early on
+    - e.g chat plugins, social media plugins
+  - worker
+- Isolate the google tag script and put it into another component in the `/app/file`of the app named 'GoogleTagScript'
+
+## Using Custom Fonts
+
+- In this module there are are many google fonts
+  `import { Inter } from 'next/font/google'`
+- Lets see how we can import roboto font in action
+- As a best practice we should apply sub setting, with this we can reduce the font size to only the characters we need
+  For e.g if you are using a latin language then we should set subset to `latin`
+- We can also pass weight, to specify the thickness of the font we need in our app
+- However if you are using a variable font e.g like open sans we do not need to provide a weight object, They use a single file to represent a wide range of font styles
+- The fonts even though they are google fonts they are served from our own domain so the browser is not sending a separate response
+- When we build our application for prod. next automatically downloads this fonts from google and serves it in our app
+
+```tsx
+import { Roboto } from 'next/font/google
+
+const roboto = Roboto({
+  subsets: ['latin'],
+  weight: ['400', '500']
+})
+// this object has a property called className that we need in our layout
+
+// usage on a tag
+<body className={roboto.className}>
+
+```
+
+### How do you then load a local font (custom fonts) in next.js
+
+- we do not have to provide a fallback font for custom font. this is done by next.js
+
+```tsx
+// using a local font
+import localFont from 'next/font/local';
+
+const monoLisa = localFont({
+  src: '../public/fonts/MonoLisa-Regular.ttf',
+});
+
+//  <body className={monoLisa.className}>
+```
+
+### Using custom fonts with tailwindcss
+
+- when creating the font we should set variable to the name of the css variable that represents our font
+
+```tsx
+// using a local font
+import localFont from 'next/font/local';
+
+const monoLisa = localFont({
+  src: '../public/fonts/MonoLisa-Regular.ttf',
+  variable: '--font-monolisa', // this is the name we choose
+});
+
+// next in the body instea of monolisa.className we use monoLisa.variable
+  <body className={monoLisa.variable}>
+```
+
+- Next we register the font in our tailwind config
+- checkout `tailwind.config.js`
+
+## Search Engine Optimization (SEO)
+
+- Whenever we export a metadata in a layout or a page file next.js will automatically include it in the head of our html pages
+- To make our website seo friendly we should make sure every page has proper meta tags
+- With the metaData tags in our root layout every page will have that meta tags. Then we can go to individual pages e.g in `page.tsx` and override the meta tags. (make sure to always spell it as metadata)
+
+```tsx
+//like so
+export const metadata: Metadata = {
+  title: 'Create Next App',
+  description: 'Generated by create next app',
+};
+```
+
+## NOTE:
+
+- In some pages that uses route or query string parameters we need to generate the metadata dynamically
+  E.g we have a page for showing a product. on that page the metadata will be dependant on that product that we show
+- To do that we export an async function called `generateMetadata`
+
+```tsx
+// for a page that uses dynamic products
+
+export async function generateMetadata(): Promise<Metadata> {
+  // typically we want to fetch something from an api and await it or if using prisma
+  const product = await fetch('...');
+  return {
+    title: product.title,
+    description: product?.desc,
+  };
+}
+```
+
+## Lazy Loading
+
+- it is a technique for loading client components or third party libraries in the future when you need them
+- Typically as a result of a user action, e.g when a user clicks on a button, or scroll to a ceratain point
+- Checkout the file named `HeavyComponent.tsx`
+<!-- note client components cannot be async  -->
+- In this example. the page.tsx should be made a client component
+- Lets say we do not want to include the `HeavyComponent.tsx` immediately when the page is rendered but include it when the user clicks a button or does something. So we can postpone the loading of the heavy component to the future
+
+## Lazy loading external libraries
+
+- `install lodash` - helps us to manipulate objects and arrays, and perform sorting of arrays
+- checkout the file `lazy-loading-external-libraries`
+
+## Deploying Next.js Application
+
+- Before you deploy our app to prod first build it locally to make sure you don't have any errors bekos if there are any build errors here they will show up during deployment
+
+```bash
+ npm run build
+```
+
+- After the build is finish without errors. commit all changes and push to github
+  **use organize import in command pallete to clean up unused content**
+- Vercel is the fastest and best way to deploy next.js apps
+- There are many services that gives us mysql hosting
+- try using hostinger
+
+<!-- Always have differenct env variables for your development and prod env -->
+
+- make sure to move the .env variables to vercel cloud (set them up)
+- in our build command on vercel we need to set `npx prisma generate and npm run build`
