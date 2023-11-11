@@ -338,7 +338,7 @@ const handleNewUser = () => {
 ```
 
 - Seeing loading in the network tab does not impact the SEO
-- This is what the client will initially see, the server generates the page and sends it to the client, so it does not terminate the response request cycle, it will wait for the user table to render and then it will send additional data back to the client. This is called straming
+- This is what the client will initially see, the server generates the page and sends it to the client, so it does not terminate the response request cycle, it will wait for the user table to render and then it will send additional data back to the client. This is called strreaming
 - Note on a given page we can have multiple suspense on a page
 
 NOTE: Now if we want to show a fallback of loading on every page there are two ways to do this
@@ -358,6 +358,8 @@ NOTE: Now if we want to show a fallback of loading on every page there are two w
 Another way to do this 2. We create `loading.tsx ` file in the root of our app
 
 - In this component we create and export a react component that we export to be rendered when a page is being rendered
+- NOTE
+  `You can create a page specific loading ui for a particular page. e.g in /about/page.tsx you can create loading.tsx in this folder to use only for the /about route`
 
 ```tsx
 const Loading = () => {
@@ -840,3 +842,22 @@ export async function generateMetadata(): Promise<Metadata> {
 
 - make sure to move the .env variables to vercel cloud (set them up)
 - in our build command on vercel we need to set `npx prisma generate and npm run build`
+
+## ROUTE GROUPS
+
+- This is also called hidden directory;
+- It is used for organizing files
+- We named the folder with parenthesis e.g (dashboard)
+- Inside the (dashboard) folder you can define pages such as `users/page.tsx` in this folder the /dashboard is ignored. We can access users by going directly to /users
+- Within this directory we can also share layouts.
+- With this approach you can even have a directory to have
+  check this tutorial `https://www.youtube.com/watch?v=MyVQ0TU-HcQ`
+- If you do not give a layout to the hidden directory the global layout will still apply
+
+Hydration error `https://www.youtube.com/watch?v=KAjemAivU24`
+
+## Hydration Error fix
+
+`https://stackoverflow.com/questions/75423463/warning-you-are-mounting-a-new-body-component-when-a-previous-one-has-not-first`
+
+- Only the root page should have html and body tags
